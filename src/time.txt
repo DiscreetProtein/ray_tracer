@@ -1,0 +1,8 @@
+1) (With large Diffuse sphere)
+
+9759.42 real      9080.50 user       151.24 sys
+
+2) (With Large metal sphere)
+
+10769.82 real      9963.94 user       159.26 sys
+

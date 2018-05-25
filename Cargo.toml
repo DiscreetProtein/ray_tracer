@@ -1,0 +1,7 @@
+[package]
+name = "ray_tracer"
+version = "0.1.0"
+authors = ["Jordan Wiebe <jrdan.wiebe@gmail.com>"]
+
+[dependencies]
+rand = "0.3"
