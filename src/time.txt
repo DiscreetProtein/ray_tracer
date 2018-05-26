@@ -1,8 +1,11 @@
-1) (With large Diffuse sphere)
-
+(With large Diffuse sphere - 1000 x 500)
+1) (no release)
 9759.42 real      9080.50 user       151.24 sys
+2) (--release)
+2323.46 real      2070.09 user       108.78 sys
+3) (--release)
+2077.37 real      1908.60 user        90.75 sys
 
-2) (With Large metal sphere)
-
-10769.82 real      9963.94 user       159.26 sys
+(With Large metal sphere)
+1) 10769.82 real      9963.94 user       159.26 sys
 

@@ -1,5 +1,6 @@
 use std::ops::{Add, Sub, Div, Mul, Neg};
 
+// TODO: Figure out what derive(Copy) does
 #[derive(Debug, Copy)]
 pub struct Vec3 {
     pub x: f64,
@@ -46,6 +47,9 @@ impl Clone for Vec3 {
     }
 }
 
+/*
+ *  Add implementations for Vec3
+ */
 impl<'a, 'b> Add<&'b Vec3> for &'a Vec3 {
     type Output = Vec3;
 
@@ -58,6 +62,45 @@ impl<'a, 'b> Add<&'b Vec3> for &'a Vec3 {
     }
 }
 
+impl<'a> Add<Vec3> for &'a Vec3 {
+    type Output = Vec3;
+
+    fn add(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z
+        }
+    }
+}
+
+impl<'a> Add<&'a Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn add(self, other: &'a Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z
+        }
+    }
+}
+
+impl Add<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn add(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z
+        }
+    }
+}
+
+/*
+ *  Subtract implementations for Vec3
+ */
 impl<'a, 'b> Sub<&'b Vec3> for &'a Vec3 {
     type Output = Vec3;
 
@@ -70,6 +113,45 @@ impl<'a, 'b> Sub<&'b Vec3> for &'a Vec3 {
     }
 }
 
+impl<'a> Sub<&'a Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: &'a Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z
+        }
+    }
+}
+
+impl<'a> Sub<Vec3> for &'a Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z
+        }
+    }
+}
+
+impl Sub<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z
+        }
+    }
+}
+
+/*
+ *  Negative implementation for Vec3
+ */
 impl Neg for Vec3 {
     type Output = Vec3;
 
@@ -82,6 +164,9 @@ impl Neg for Vec3 {
     }
 }
 
+/*
+ *  Multiplication implementations for Vec3
+ */
 impl<'a, 'b> Mul<&'b Vec3> for &'a Vec3 {
     type Output = Vec3;
 
@@ -90,6 +175,66 @@ impl<'a, 'b> Mul<&'b Vec3> for &'a Vec3 {
             x: self.x * other.x,
             y: self.y * other.y,
             z: self.z * other.z
+        }
+    }
+}
+
+impl<'a> Mul<&'a Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: &'a Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z
+        }
+    }
+}
+
+impl<'a> Mul<Vec3> for &'a Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z
+        }
+    }
+}
+
+impl Mul<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z
+        }
+    }
+}
+
+impl Mul<f64> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, val: f64) -> Vec3 {
+        Vec3 {
+            x: self.x * val,
+            y: self.y * val,
+            z: self.z * val
+        }
+    }
+}
+
+impl Mul<Vec3> for f64 {
+    type Output = Vec3;
+
+    fn mul(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self * other.x,
+            y: self * other.y,
+            z: self * other.z
         }
     }
 }
@@ -118,6 +263,9 @@ impl<'a> Mul<&'a Vec3> for f64 {
     }
 }
 
+/*
+ *  Division implementation for Vec3
+ */
 impl<'a, 'b> Div<&'b Vec3> for &'a Vec3 {
     type Output = Vec3;
 
@@ -130,7 +278,55 @@ impl<'a, 'b> Div<&'b Vec3> for &'a Vec3 {
     }
 }
 
+impl<'a> Div<&'a Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn div(self, other: &'a Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x / other.x,
+            y: self.y / other.y,
+            z: self.z / other.z
+        }
+    }
+}
+
+impl<'a> Div<Vec3> for &'a Vec3 {
+    type Output = Vec3;
+
+    fn div(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x / other.x,
+            y: self.y / other.y,
+            z: self.z / other.z
+        }
+    }
+}
+
+impl Div<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn div(self, other: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x / other.x,
+            y: self.y / other.y,
+            z: self.z / other.z
+        }
+    }
+}
+
 impl<'a> Div<f64> for &'a Vec3 {
+    type Output = Vec3;
+
+    fn div(self, val: f64) -> Vec3 {
+        Vec3 {
+            x: self.x / val,
+            y: self.y / val,
+            z: self.z / val
+        }
+    }
+}
+
+impl Div<f64> for Vec3 {
     type Output = Vec3;
 
     fn div(self, val: f64) -> Vec3 {

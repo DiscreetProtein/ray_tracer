@@ -1,5 +1,6 @@
 use Vec3;
 
+#[derive(Debug)]
 pub struct Ray {
     pub a: Vec3,
     pub b: Vec3
@@ -15,6 +16,6 @@ impl Ray {
     }
 
     pub fn point_at_parameter(&self, t: f64) -> Vec3 {
-        self.origin() + &(t * self.direction())
+        self.origin() + (t * self.direction())
     }
 }

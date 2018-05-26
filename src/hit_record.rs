@@ -22,10 +22,10 @@ pub struct HitRecord {
 fn random_in_unit_sphere() -> Vec3 {
     let mut rng = rand::thread_rng();
     loop {
-        let p = &(2.0 * &Vec3::new(
+        let p = 2.0 * Vec3::new(
             rng.next_f64(),
             rng.next_f64(),
-            rng.next_f64())) - &Vec3::new(1.0, 1.0, 1.0);
+            rng.next_f64()) - Vec3::new(1.0, 1.0, 1.0);
         
         if p.dot(&p) < 1.0 {
             return p;
@@ -34,7 +34,7 @@ fn random_in_unit_sphere() -> Vec3 {
 }
 
 fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
-    v - &(2.0 * v.dot(n) * n)
+    v - (2.0 * v.dot(n) * n)
 }
 
 fn refract(v: &Vec3, n: &Vec3, ni_over_nt: f64) -> Option<Vec3> {
@@ -43,7 +43,7 @@ fn refract(v: &Vec3, n: &Vec3, ni_over_nt: f64) -> Option<Vec3> {
     let discriminant = 1.0 - ni_over_nt * ni_over_nt * (1.0 - dt * dt);
 
     if discriminant > 0.0 {
-        return Some(&(ni_over_nt * &(&uv - &(n * dt))) - &(n * discriminant.sqrt()));
+        return Some(ni_over_nt * (uv - (n * dt)) - (n * discriminant.sqrt()));
     }
     None
 }
@@ -58,14 +58,14 @@ fn schlick(cosine: f64, ref_idx: f64) -> f64 {
 
 // Lambertian scatter
 fn lambertian_scatter(rec: &HitRecord, albedo: Vec3) -> (bool, Ray, Vec3) {
-    let target = &(&rec.p + &rec.normal) + &random_in_unit_sphere();
-    return (true, Ray{a: rec.p, b: &target - &rec.p}, albedo);
+    let target = (rec.p + rec.normal) + random_in_unit_sphere();
+    return (true, Ray{a: rec.p, b: target - rec.p}, albedo);
 }
 
 // Reflective scatter
 fn metal_scatter(r_in: &Ray, rec: &HitRecord, albedo: Vec3, fuzz: f64) -> (bool, Ray, Vec3) {
     let reflected = reflect(&r_in.direction().unit_vector(), &rec.normal);
-    let scattered = Ray{a: rec.p, b: &reflected + &(fuzz * &random_in_unit_sphere())};
+    let scattered = Ray{a: rec.p, b: reflected + (fuzz * random_in_unit_sphere())};
     return (scattered.direction().dot(&rec.normal) > 0.0, scattered, albedo);
 }
 
@@ -77,12 +77,12 @@ fn dialectric_scatter(r_in: &Ray, rec: &HitRecord, ref_idx: f64) -> (bool, Ray, 
     // TODO: Might be worth looking into using tuples and if statements to assign 
     // these variables
     // TODO: Using if/else statements might be more performant
-    let mut outward_normal = -1.0 * &rec.normal;
+    let mut outward_normal = -1.0 * rec.normal;
     let mut ni_over_nt: f64 = ref_idx;
     let mut cosine: f64 = ref_idx * r_in.direction().dot(&rec.normal) / r_in.direction().length();
 
     if r_in.direction().dot(&rec.normal) <= 0.0 {
-        outward_normal = rec.normal.clone();
+        outward_normal = rec.normal;
         ni_over_nt = 1.0 / ref_idx;
         cosine = -(r_in.direction().dot(&rec.normal)) / r_in.direction().length();
     }
@@ -110,15 +110,6 @@ fn dialectric_scatter(r_in: &Ray, rec: &HitRecord, ref_idx: f64) -> (bool, Ray, 
 }
 
 impl HitRecord {
-    pub fn new() -> HitRecord {
-        HitRecord{
-            t: 0.0,
-            p: Vec3::new(0.0, 0.0, 0.0),
-            normal: Vec3::new(0.0, 0.0, 0.0),
-            material: Material::Lambertian{ albedo: Vec3::new(0.0, 0.0, 0.0) },
-        }
-    }
-
     // Returns a tuple with (scattered ray, attenuation)
     // TODO: Should return an Option
     pub fn scatter(&self, r_in: &Ray) -> (bool, Ray, Vec3) {
