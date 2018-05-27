@@ -73,48 +73,46 @@ fn metal_scatter(r_in: &Ray, rec: &HitRecord, albedo: Vec3, fuzz: f64) -> Option
 }
 
 // Dialectric Materia (like glass, etc.)
-// TODO: Come back and tune performance
 fn dialectric_scatter(r_in: &Ray, rec: &HitRecord, ref_idx: f64) -> Option<(Ray, Vec3)> {
     let reflected = reflect(&r_in.direction(), &rec.normal);
 
-    // TODO: Might be worth looking into using tuples and if statements to assign 
-    // these variables
-    // TODO: Using if/else statements might be more performant
-    let mut outward_normal = -1.0 * rec.normal;
-    let mut ni_over_nt: f64 = ref_idx;
-    let mut cosine: f64 = ref_idx * r_in.direction().dot(&rec.normal) / r_in.direction().length();
-
-    if r_in.direction().dot(&rec.normal) <= 0.0 {
-        outward_normal = rec.normal;
-        ni_over_nt = 1.0 / ref_idx;
-        cosine = -(r_in.direction().dot(&rec.normal)) / r_in.direction().length();
-    }
+    let (outward_normal, ni_over_nt, cosine) =
+        if r_in.direction().dot(&rec.normal) > 0.0 {
+            (
+                -1.0 * rec.normal,
+                ref_idx,
+                ref_idx * r_in.direction().dot(&rec.normal) / r_in.direction().length()
+            )
+        } else {
+            (
+                rec.normal,
+                1.0 / ref_idx,
+                -(r_in.direction().dot(&rec.normal)) / r_in.direction().length()
+            )
+        };
 
     let mut reflect_prob = 1.0;
     let attenuation = Vec3::new(1.0, 1.0, 1.0);
 
-    // TODO: Refactor / rename refracted as it is technically no longer the case
-    let refracted = match refract(&r_in.direction(), &outward_normal, ni_over_nt) {
-        Some(v) => {
+    let scattered = match refract(&r_in.direction(), &outward_normal, ni_over_nt) {
+        Some(refracted) => {
             reflect_prob = schlick(cosine, ref_idx);
-            v
+            Ray{ a: rec.p, b: refracted }
         },
-        None => reflected
+        None => Ray{ a: rec.p, b: reflected }
     };
 
     let mut rng = rand::thread_rng();
-    let scattered = if rng.next_f64() < reflect_prob {
-        Ray{a: rec.p, b: reflected}
+    
+    return if rng.next_f64() < reflect_prob {
+        Some((Ray{ a: rec.p, b: reflected }, attenuation))
     } else {
-        Ray{a: rec.p, b: refracted}
+        Some((scattered, attenuation))
     };
-
-    Some((scattered, attenuation))
 }
 
 impl HitRecord {
     // Returns a tuple with (scattered ray, attenuation)
-    // TODO: Should return an Option
     pub fn scatter(&self, r_in: &Ray) -> Option<(Ray, Vec3)> {
         return match self.material {
             Material::Lambertian{ albedo } => lambertian_scatter(self, albedo),
