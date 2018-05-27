@@ -154,7 +154,7 @@ fn colour(r: &Ray, spheres: &Vec<Sphere>, depth: u8) -> Vec3 {
 fn main() {
     // let (nx, ny) = (400, 200);
     let (nx, ny) = (1000, 500);
-    let ns = 100;
+    let ns = 100;`
 
     let mut rng = rand::thread_rng();
 
