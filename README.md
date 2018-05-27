@@ -4,8 +4,6 @@
 This is a simple ray tracer implemented in rust, following the *Ray Tracing in One Weekend* by Peter Shirley. 
 http://in1weekend.blogspot.ca/2016/01/ray-tracing-in-one-weekend.html
 
-![scene](scenes/scene2.jpg?raw=true)
-
 ## TODO
 - [ ] Multi-threaded support
 - [ ] Implement lights (by sending shadow rays to each light source)
