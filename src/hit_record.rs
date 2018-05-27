@@ -54,24 +54,27 @@ fn schlick(cosine: f64, ref_idx: f64) -> f64 {
     r0 + (1.0 - r0) * (1.0 - cosine).powf(5.0)
 }
 
-// TODO: scatter functions should return Option<>
-
 // Lambertian scatter
-fn lambertian_scatter(rec: &HitRecord, albedo: Vec3) -> (bool, Ray, Vec3) {
+fn lambertian_scatter(rec: &HitRecord, albedo: Vec3) -> Option<(Ray, Vec3)> {
     let target = (rec.p + rec.normal) + random_in_unit_sphere();
-    return (true, Ray{a: rec.p, b: target - rec.p}, albedo);
+    Some((Ray{a: rec.p, b: target - rec.p}, albedo))
 }
 
 // Reflective scatter
-fn metal_scatter(r_in: &Ray, rec: &HitRecord, albedo: Vec3, fuzz: f64) -> (bool, Ray, Vec3) {
+fn metal_scatter(r_in: &Ray, rec: &HitRecord, albedo: Vec3, fuzz: f64) -> Option<(Ray, Vec3)> {
     let reflected = reflect(&r_in.direction().unit_vector(), &rec.normal);
     let scattered = Ray{a: rec.p, b: reflected + (fuzz * random_in_unit_sphere())};
-    return (scattered.direction().dot(&rec.normal) > 0.0, scattered, albedo);
+
+    if scattered.direction().dot(&rec.normal) > 0.0 {
+        Some((scattered, albedo))
+    } else {
+        None
+    }
 }
 
 // Dialectric Materia (like glass, etc.)
 // TODO: Come back and tune performance
-fn dialectric_scatter(r_in: &Ray, rec: &HitRecord, ref_idx: f64) -> (bool, Ray, Vec3) {
+fn dialectric_scatter(r_in: &Ray, rec: &HitRecord, ref_idx: f64) -> Option<(Ray, Vec3)> {
     let reflected = reflect(&r_in.direction(), &rec.normal);
 
     // TODO: Might be worth looking into using tuples and if statements to assign 
@@ -105,18 +108,18 @@ fn dialectric_scatter(r_in: &Ray, rec: &HitRecord, ref_idx: f64) -> (bool, Ray, 
     } else {
         Ray{a: rec.p, b: refracted}
     };
-    
-    (true, scattered, attenuation)
+
+    Some((scattered, attenuation))
 }
 
 impl HitRecord {
     // Returns a tuple with (scattered ray, attenuation)
     // TODO: Should return an Option
-    pub fn scatter(&self, r_in: &Ray) -> (bool, Ray, Vec3) {
-        match self.material {
-            Material::Lambertian{ albedo } => return lambertian_scatter(self, albedo),
-            Material::Metal{ albedo, fuzz } => return metal_scatter(r_in, self, albedo, fuzz),
-            Material::Dialectric{ ref_idx } => return dialectric_scatter(r_in, self, ref_idx),
+    pub fn scatter(&self, r_in: &Ray) -> Option<(Ray, Vec3)> {
+        return match self.material {
+            Material::Lambertian{ albedo } => lambertian_scatter(self, albedo),
+            Material::Metal{ albedo, fuzz } => metal_scatter(r_in, self, albedo, fuzz),
+            Material::Dialectric{ ref_idx } => dialectric_scatter(r_in, self, ref_idx),
         }
     }
 }

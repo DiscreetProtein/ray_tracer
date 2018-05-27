@@ -15,8 +15,7 @@ use camera::Camera;
 
 use rand::Rng;
 
-// TODO: Clean up all the unnecessary borrowing. Mostly need to implement 
-//       Add, Sub, etc. for Vec3 in adition to &Vec3.
+use std::f64;
 
 // Iterate through a list of spheres and determines
 // whether / where a hit will take place
@@ -127,14 +126,17 @@ fn get_scene() -> Vec<Sphere> {
 }
 
 fn colour(r: &Ray, spheres: &Vec<Sphere>, depth: u8) -> Vec3 {
-    // TODO: Replace 1_000_000 with float max
-    return match hit(r, spheres, 0.001, 1_000_000.0) {
+    return match hit(r, spheres, 0.001, f64::MAX) {
         Some(hit_record) => {
-            let (is_scattered, scattered, attenuation) = hit_record.scatter(r);
-            if depth < 50 && is_scattered {
-                attenuation * colour(&scattered, spheres, depth + 1)
-            } else {
-                Vec3::new(0.0, 0.0, 0.0)
+            match hit_record.scatter(r) {
+                Some((scattered, attenuation)) => {
+                    if depth < 50 {
+                        attenuation * colour(&scattered, spheres, depth + 1)
+                    } else {
+                        Vec3::new(0.0, 0.0, 0.0)
+                    }
+                },
+                None => Vec3::new(0.0, 0.0, 0.0)
             }
         },
         None => {

@@ -1,6 +1,5 @@
 use std::ops::{Add, Sub, Div, Mul, Neg};
 
-// TODO: Figure out what derive(Copy) does
 #[derive(Debug, Copy)]
 pub struct Vec3 {
     pub x: f64,

@@ -20,8 +20,6 @@ impl Sphere {
     pub fn hit(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = r.origin() - self.center;
 
-        // TODO: Can remove redundant twos
-
         let a = r.direction().dot(r.direction());
         let b = 2.0 * r.direction().dot(&oc);
         let c = oc.dot(&oc) - self.radius * self.radius;
